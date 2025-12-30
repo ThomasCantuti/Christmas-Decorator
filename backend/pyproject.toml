@@ -1,0 +1,20 @@
+[project]
+name = "christmas-decorator"
+version = "0.1.0"
+description = "Christmas Image Decorator API"
+requires-python = ">=3.10"
+
+[tool.pyrefly]
+source = ["."]
+
+[tool.pyright]
+pythonVersion = "3.13"
+venvPath = "."
+venv = ".venv"
+extraPaths = ["."]
+
+[tool.pylsp-mypy]
+enabled = true
+
+[tool.ruff]
+src = ["."]

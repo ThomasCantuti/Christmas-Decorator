@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+python-multipart
+datapizza-ai
+datapizza-ai-clients-openai-like
+llama-cpp-python
+diffusers
+torch
+transformers
+pillow
+numpy
+huggingface_hub
+accelerate
