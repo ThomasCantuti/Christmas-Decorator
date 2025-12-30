@@ -1,13 +1,24 @@
 # Christmas Decorator AI 🎄
 
-This application uses AI to decorate your room photos with Christmas themes.
+This application uses specific AI agents to decorate your room photos with Christmas themes. It uses a multi-agent system powered by local LLMs and VLMs.
 
 ## Architecture
 
 - **Frontend**: React (Vite) with a premium dark theme.
-- **Backend**: FastAPI (Python).
-- **AI Framework**: Datapizza.ai (orchestration).
-- **Runtime**: `llama.cpp` (for VLM/LLM inference) & Stable Diffusion (via diffusers) for image generation.
+- **Backend**: FastAPI (Python) serving as the agent orchestrator.
+- **AI Engine**: [Datapizza.ai](https://github.com/datapizza/datapizza) agents for validation, planning, and execution.
+- **Model Runtime**: `llama.cpp` server (running 3 dedicated micro-services).
+- **Models**:
+  - **Text Agent**: `Gemma 3 270M` (Reasoning & Validation)
+  - **Vision Agent**: `Gemma 3 4B` (Image Understanding)
+  - **Decorator Agent**: `Qwen Image Edit` (Image-to-Image Generation)
+
+## Prerequisites
+
+1. **Python 3.10+** and **Node.js**.
+2. **llama.cpp**: You must have `llama-server` installed and available in your system PATH.
+   - Mac/Linux: Build from source (`make`) or install via brew if available.
+   - Windows: Download pre-built binaries.
 
 ## Setup
 
@@ -22,11 +33,10 @@ This application uses AI to decorate your room photos with Christmas themes.
    pip install -r requirements.txt
    ```
 3. **Download Models**:
-   To run locally with `llama.cpp`, you need to download the LLaVA models (or compatible) and place them in `backend/models/`:
-   - `llava-v1.5-7b-Q4_K.gguf` (Main VLM)
-   - `mmproj-model-f16.gguf` (CLIP projector)
-   
-   *If models are not found, the backend will run in MOCK mode (simulating the decoration).*
+   Run the helper script to download the required GGUF models (Gemma 3 & Qwen):
+   ```bash
+   python download_models.py
+   ```
 
 ### 2. Frontend
 
@@ -39,23 +49,44 @@ This application uses AI to decorate your room photos with Christmas themes.
 
 ## Running the App
 
-You can run both servers manually or use the helper script.
+The application requires 3 terminals to run the models, backend, and frontend concurrently.
 
-**Manual:**
-- Terminal 1 (Backend): `python backend/main.py`
-- Terminal 2 (Frontend): `npm run dev` in `frontend/` directory.
+**Terminal 1: Model Servers**
+Start the `llama-server` instances for Text, Vision, and Diffusion models.
+```bash
+cd backend
+chmod +x start_models.sh
+./start_models.sh
+```
+*Wait until you see "Servers are starting" and the logs indicate they are listening on ports 8081, 8082, and 8083.*
 
-The frontend will act as the interface, uploading images to the backend which processes them using the AI agent.
+**Terminal 2: Backend API**
+Start the FastAPI orchestrator.
+```bash
+cd backend
+# source venv/bin/activate
+uvicorn main:app --reload
+```
+
+**Terminal 3: Frontend**
+Start the web interface.
+```bash
+cd frontend
+npm run dev
+```
 
 ## Usage
 
 1. Open the web app (usually `http://localhost:5173`).
 2. Upload a photo of a room or office.
 3. (Optional) Add a specific text request (e.g., "Make it icy blue theme").
-4. Click Decorate!
+4. **Decorate!** The agents will:
+   - **Validate** the image is a room.
+   - **Plan** the decoration strategy.
+   - **Generate** the new festive image.
 
-## Validation Logic
+## Troubleshooting
 
-- The AI first checks if the image is a valid indoor environment using the VLM.
-- If text is provided, it checks if the request is relevant to the image.
-- If valid, it generates a decoration prompt and edits the image.
+- **"llama-server not found"**: Ensure built `llama.cpp` binaries are in your PATH.
+- **Model Download Errors**: delete the `backend/models` folder and retry `python download_models.py`.
+- **Validation Fails**: The VLM (Gemma 3 4B) might be strict; ensure the room is clearly visible.
