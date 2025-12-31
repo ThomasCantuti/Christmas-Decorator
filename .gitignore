@@ -232,3 +232,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*.vscode/

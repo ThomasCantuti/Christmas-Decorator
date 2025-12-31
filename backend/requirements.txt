@@ -3,6 +3,7 @@ uvicorn
 python-multipart
 datapizza-ai
 datapizza-ai-clients-openai-like
+datapizza-ai-clients-google
 llama-cpp-python
 diffusers
 torch

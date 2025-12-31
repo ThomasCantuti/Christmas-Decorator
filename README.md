@@ -1,17 +1,20 @@
 # Christmas Decorator AI 🎄
 
-This application uses specific AI agents to decorate your room photos with Christmas themes. It uses a multi-agent system powered by local LLMs and VLMs.
+This application uses specific AI agents to decorate your room photos with Christmas themes. It uses a multi-agent system powered by local LLMs, VLMs, and cloud-based image generation.
+
+## Project Evolution
+
+> **Note on Model Selection**: The original scope of this project was to use **only open-weight models** running locally. However, the **Qwen Image Edit** model proved to be too resource-intensive for local execution—even on laptops equipped with an **NVIDIA GeForce RTX 5090** and **CUDA enabled**. Due to these hardware constraints, the image generation component was migrated to the **Gemini Flash Image model**, which requires a Google API key.
 
 ## Architecture
 
 - **Frontend**: React (Vite) with a premium dark theme.
 - **Backend**: FastAPI (Python) serving as the agent orchestrator.
-- **AI Engine**: [Datapizza.ai](https://github.com/datapizza/datapizza) agents for validation, planning, and execution.
-- **Model Runtime**: `llama.cpp` server (running 3 dedicated micro-services).
+- **AI Framework**: [Datapizza.ai](https://github.com/datapizza/datapizza) agents for validation, planning, and execution.
+- **Model Runtime**: `llama.cpp` server for local vision model.
 - **Models**:
-  - **Text Agent**: `Gemma 3 270M` (Reasoning & Validation)
-  - **Vision Agent**: `Gemma 3 4B` (Image Understanding)
-  - **Decorator Agent**: `Qwen Image Edit` (Image-to-Image Generation)
+  - **Vision Agent**: `Gemma 3 4B` (Image Understanding) — *local*
+  - **Decorator Agent**: `Gemini Flash Image` (Image Generation) — *cloud API*
 
 ## Prerequisites
 
@@ -19,6 +22,8 @@ This application uses specific AI agents to decorate your room photos with Chris
 2. **llama.cpp**: You must have `llama-server` installed and available in your system PATH.
    - Mac/Linux: Build from source (`make`) or install via brew if available.
    - Windows: Download pre-built binaries.
+3. **Google Gemini API Key**: Required for the image generation feature.
+   - Get your API key from [Google AI Studio](https://aistudio.google.com/apikey).
 
 ## Setup
 
@@ -33,9 +38,14 @@ This application uses specific AI agents to decorate your room photos with Chris
    pip install -r requirements.txt
    ```
 3. **Download Models**:
-   Run the helper script to download the required GGUF models (Gemma 3 & Qwen):
+   Run the helper script to download the required GGUF models (Gemma 3):
    ```bash
    python download_models.py
+   ```
+4. **Configure API Key**:
+   Create a `.env` file in the `backend` directory and add your Gemini API key (follow the `.env.example` file):
+   ```bash
+   GEMINI_API_KEY=your_api_key_here
    ```
 
 ### 2. Frontend
@@ -52,20 +62,19 @@ This application uses specific AI agents to decorate your room photos with Chris
 The application requires 3 terminals to run the models, backend, and frontend concurrently.
 
 **Terminal 1: Model Servers**
-Start the `llama-server` instances for Text, Vision, and Diffusion models.
+Start the `llama-server` instances for Vision model.
 ```bash
 cd backend
-chmod +x start_models.sh
-./start_models.sh
+chmod +x start_model.sh
+./start_model.sh
 ```
-*Wait until you see "Servers are starting" and the logs indicate they are listening on ports 8081, 8082, and 8083.*
+*Wait until you see "Server started with PID `PID`" and the logs indicate they are listening on port 8081.*
 
 **Terminal 2: Backend API**
 Start the FastAPI orchestrator.
 ```bash
 cd backend
-# source venv/bin/activate
-uvicorn main:app --reload
+python3 main.py
 ```
 
 **Terminal 3: Frontend**
