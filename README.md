@@ -2,6 +2,10 @@
 
 This application uses specific AI agents to decorate your room photos with Christmas themes. It uses a multi-agent system powered by local LLMs, VLMs, and cloud-based image generation.
 
+## Showcase
+
+https://github.com/user-attachments/assets/91e779ec-0727-4470-9ef2-77ecf25ac23c
+
 ## Project Evolution
 
 > **Note on Model Selection**: The original scope of this project was to use **only open-weight models** running locally. However, the **Qwen Image Edit** model proved to be too resource-intensive for local execution—even on laptops equipped with an **NVIDIA GeForce RTX 5090** and **CUDA enabled**. Due to these hardware constraints, the image generation component was migrated to the **Gemini Flash Image model**, which requires a Google API key.
